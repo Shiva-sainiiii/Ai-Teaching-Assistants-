@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Duke AI Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <header>
+        <i class="ph-fill ph-robot"></i> Duke AI Pro
+    </header>
+
+    <div id="pdfPage" class="page active">
+        <div class="glass-card">
+            <h3><i class="ph-fill ph-file-pdf"></i> Upload Document</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                Upload your PDF to start chatting, generating summaries, and taking quizzes.
+            </p>
+            
+            <label class="file-upload-label" for="pdfUpload">
+                <i class="ph ph-upload-simple"></i>
+                <span id="uploadText">Tap to browse or drag file here</span>
+            </label>
+            <input type="file" id="pdfUpload" accept="application/pdf,image/*" capture="environment">
+            
+            <div id="uploadStatus">
+                <i class="ph-fill ph-check-circle"></i> <span>PDF successfully loaded!</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="chatPage" class="page">
+        <div id="chat">
+            <div class="msg bot" id="welcomeMsg">
+                Hello! I am Duke AI. Please upload a PDF first, then ask me anything about it.
+            </div>
+        </div>
+        <div class="chat-input-wrapper">
+            <input id="input" placeholder="Ask about your PDF..." autocomplete="off">
+            <button id="sendBtn"><i class="ph-bold ph-paper-plane-right"></i></button>
+        </div>
+    </div>
+
+    <div id="summaryPage" class="page">
+        <div class="glass-card">
+            <h3><i class="ph-fill ph-brain"></i> PDF Summary</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                Get a structured and concise summary of the uploaded document.
+            </p>
+            <button id="summaryBtn"><i class="ph-bold ph-magic-wand"></i> Generate Summary</button>
+            <div id="summaryResult" style="margin-top: 24px; line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <div id="quizPage" class="page">
+        <div class="glass-card">
+            <h3><i class="ph-fill ph-question"></i> Interactive Quiz</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                Test your knowledge with an AI-generated multiple-choice quiz based on the PDF.
+            </p>
+            <button id="quizBtn"><i class="ph-bold ph-lightning"></i> Generate Quiz</button>
+        </div>
+        <div id="quizResult"></div>
+    </div>
+
+    <div class="navbar">
+        <button class="nav-btn active" data-page="pdfPage">
+            <i class="ph-fill ph-file-text"></i> PDF
+        </button>
+        <button class="nav-btn" data-page="chatPage">
+            <i class="ph-fill ph-chats"></i> Chat
+        </button>
+        <button class="nav-btn" data-page="summaryPage">
+            <i class="ph-fill ph-brain"></i> Summary
+        </button>
+        <button class="nav-btn" data-page="quizPage">
+            <i class="ph-fill ph-exam"></i> Quiz
+        </button>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
