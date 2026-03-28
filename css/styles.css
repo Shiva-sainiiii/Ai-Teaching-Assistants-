@@ -399,3 +399,32 @@ input[type="file"] {
 .chat-input-wrapper {
     gap: 8px; /* Thoda gap buttons ke beech */
 }
+
+
+/* Stop Button Styling */
+.stop-btn {
+    background: var(--danger);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    margin-left: auto; /* Header ke right side mein */
+    display: none; /* By default hidden */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+/* Jab AI bol raha ho, toh button ko flash karwayenge */
+.stop-btn.active {
+    display: flex;
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
