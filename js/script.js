@@ -144,6 +144,10 @@ async function sendMsg() {
 
     const reply = await callAI(fullPrompt);
     botMsgDiv.innerHTML = marked.parse(reply);
+    
+    // ✨ New: AI will now speak the reply
+    speakText(reply); 
+    
     scrollToBottom();
 }
 
@@ -341,3 +345,68 @@ window.addEventListener("beforeunload", () => {
     totalTime = parseInt(totalTime) + sessionTime;
     localStorage.setItem("studyTime", totalTime);
 });
+
+// --- VOICE FEATURE LOGIC ---
+
+const micBtn = document.getElementById("micBtn");
+const inputField = document.getElementById("input");
+
+// Check browser support
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US'; // Aap 'hi-IN' bhi kar sakte hain Hinglish ke liye
+
+    // Start recording
+    micBtn.addEventListener("click", () => {
+        if (micBtn.classList.contains("listening")) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    });
+
+    recognition.onstart = () => {
+        micBtn.classList.add("listening");
+        inputField.placeholder = "Listening...";
+    };
+
+    recognition.onend = () => {
+        micBtn.classList.remove("listening");
+        inputField.placeholder = "Ask about your PDF...";
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        inputField.value = transcript;
+        sendMsg(); // Voice se text aate hi automatic message bhej dega
+    };
+} else {
+    micBtn.style.display = "none"; // Agar browser support na kare
+    console.log("Speech Recognition not supported in this browser.");
+}
+
+// AI Voice Response Function
+function speakText(text) {
+    // Markdown symbols ko remove karna taaki voice saaf aaye
+    const cleanText = text.replace(/[*#_`]/g, "");
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'hi-IN';
+    utterance.rate = 1; // Speed
+    utterance.pitch = 1;
+    
+    // Voice select karna (optional)
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+        utterance.voice = voices.find(v => v.name.includes("Google")) || voices[0];
+    }
+
+    window.speechSynthesis.speak(utterance);
+}
+
+// --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
+// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
+// speakText(reply); 
