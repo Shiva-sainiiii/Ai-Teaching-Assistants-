@@ -346,50 +346,6 @@ window.addEventListener("beforeunload", () => {
     localStorage.setItem("studyTime", totalTime);
 });
 
-// --- VOICE FEATURE LOGIC ---
-
-const micBtn = document.getElementById("micBtn");
-const inputField = document.getElementById("input");
-
-// Check browser support
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = 'en-US'; // Aap 'hi-IN' bhi kar sakte hain Hinglish ke liye
-
-    // Start recording
-    micBtn.addEventListener("click", () => {
-        if (micBtn.classList.contains("listening")) {
-            recognition.stop();
-        } else {
-            recognition.start();
-        }
-    });
-
-    recognition.onstart = () => {
-        micBtn.classList.add("listening");
-        inputField.placeholder = "Listening...";
-    };
-
-    recognition.onend = () => {
-        micBtn.classList.remove("listening");
-        inputField.placeholder = "Ask about your PDF...";
-    };
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        inputField.value = transcript;
-        sendMsg(); // Voice se text aate hi automatic message bhej dega
-    };
-} else {
-    micBtn.style.display = "none"; // Agar browser support na kare
-    console.log("Speech Recognition not supported in this browser.");
-}
-
-// --- 🔊 VOICE RESPONSE FINAL LOGIC ---
-
 // --- VOICE FEATURE LOGIC (Optimized for Hindi) ---
 
 const micBtn = document.getElementById("micBtn");
@@ -482,3 +438,14 @@ if (stopBtn) {
         if (voicePill) voicePill.classList.remove("active");
     });
 }
+
+
+
+
+
+// --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
+// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
+// speakText(reply); 
+ ---
+// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
+// speakText(reply); 
