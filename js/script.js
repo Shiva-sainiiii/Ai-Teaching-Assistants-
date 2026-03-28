@@ -2,6 +2,9 @@
 
 let pdfText = "";
 
+// ⏱️ STUDY TIME TRACKER START
+let startTime = Date.now();
+
 // --- INITIALIZATION ---
 if (typeof marked !== 'undefined') {
     marked.setOptions({ breaks: true });
@@ -50,6 +53,13 @@ function showPage(pageId, btnElement) {
     }
 }
 
+// 📈 PDF COUNT FUNCTION (Reusable)
+function increasePDFCount() {
+    let pdfCount = localStorage.getItem("pdfCount") || 0;
+    pdfCount++;
+    localStorage.setItem("pdfCount", pdfCount);
+}
+
 // 📄 PDF & IMAGE PROCESSING
 async function handleFileUpload(e) {
     const file = e.target.files[0];
@@ -84,13 +94,21 @@ async function handleFileUpload(e) {
 
                 uploadText.innerText = file.name;
                 statusDiv.style.display = "flex";
+
+                // ✅ COUNT INCREASE
+                increasePDFCount();
             };
             reader.readAsArrayBuffer(file);
+
         } else if (file.type.startsWith("image/")) {
             uploadText.innerText = "Extracting text from image...";
             pdfText = await extractTextFromImage(file);
             uploadText.innerText = file.name;
             statusDiv.style.display = "flex";
+
+            // ✅ COUNT INCREASE
+            increasePDFCount();
+
         } else {
             alert("Unsupported file type!");
         }
@@ -104,7 +122,11 @@ async function handleFileUpload(e) {
 async function sendMsg() {
     const input = document.getElementById("input");
     let text = input.value.trim();
+
     if (!text) return;
+
+    // ✅ SAVE TOPIC
+    saveTopic(text);
 
     if (!pdfText) {
         addBotMessage("Please upload a PDF first in the Document tab.");
@@ -117,7 +139,6 @@ async function sendMsg() {
 
     const botMsgDiv = addTypingIndicator();
 
-    // Relevant context nikaalna (taaki token limit cross na ho)
     const context = getRelevantText(pdfText, text);
     const fullPrompt = `PDF Context:\n${context}\n\nUser Question: ${text}`;
 
@@ -156,13 +177,22 @@ async function generateQuiz() {
     try {
         let cleanJson = res.replace(/```json/gi, '').replace(/```/g, '').trim();
         const quizData = JSON.parse(cleanJson);
+
         renderInteractiveQuiz(quizData);
+
     } catch (err) {
         resultDiv.innerHTML = `<div class="glass-card">${marked.parse(res)}</div>`;
     }
 }
 
-// 🔥 SECURE AI CALL (Vercel Backend)
+// 🔥 QUIZ SCORE TRACKING (NEW)
+function saveQuiz(score) {
+    let quizData = JSON.parse(localStorage.getItem("quizData")) || [];
+    quizData.push(score);
+    localStorage.setItem("quizData", JSON.stringify(quizData));
+}
+
+// 🔥 SECURE AI CALL
 async function callAI(prompt) {
     try {
         const res = await fetch("/api/ask", {
@@ -241,7 +271,7 @@ async function extractTextFromScannedPDF(pdf) {
         await page.render({ canvasContext: context, viewport: viewport }).promise;
         const { data: { text } } = await Tesseract.recognize(canvas, 'eng');
         finalText += text + "\n\n";
-        canvas.width = 0; canvas.height = 0; // Memory cleanup
+        canvas.width = 0; canvas.height = 0;
     }
     return finalText;
 }
@@ -249,6 +279,9 @@ async function extractTextFromScannedPDF(pdf) {
 function renderInteractiveQuiz(data) {
     const container = document.getElementById("quizResult");
     container.innerHTML = "";
+
+    let score = 0; // ✅ SCORE TRACK
+
     data.forEach((item, index) => {
         const card = document.createElement("div");
         card.className = "quiz-card";
@@ -260,22 +293,51 @@ function renderInteractiveQuiz(data) {
             const btn = document.createElement("button");
             btn.className = "quiz-option";
             btn.innerText = opt;
+
             btn.onclick = () => {
                 if (card.dataset.answered) return;
+
                 card.dataset.answered = "true";
                 Array.from(optionsContainer.children).forEach(b => b.disabled = true);
+
                 if (opt === item.answer) {
                     btn.classList.add("correct");
+                    score++; // ✅ INCREASE SCORE
                 } else {
                     btn.classList.add("wrong");
                     Array.from(optionsContainer.children).forEach(b => {
                         if (b.innerText === item.answer) b.classList.add("correct");
                     });
                 }
+
+                // ✅ LAST QUESTION → SAVE SCORE
+                if (document.querySelectorAll(".quiz-card[data-answered='true']").length === data.length) {
+                    saveQuiz(score);
+                }
             };
+
             optionsContainer.appendChild(btn);
         });
+
         card.appendChild(optionsContainer);
         container.appendChild(card);
     });
 }
+
+function saveTopic(topic) {
+    let topics = JSON.parse(localStorage.getItem("topics")) || [];
+
+    if (!topics.includes(topic)) {
+        topics.push(topic);
+    }
+
+    localStorage.setItem("topics", JSON.stringify(topics));
+}
+
+// ⏱️ STUDY TIME SAVE
+window.addEventListener("beforeunload", () => {
+    let totalTime = localStorage.getItem("studyTime") || 0;
+    let sessionTime = Math.floor((Date.now() - startTime) / 60000);
+    totalTime = parseInt(totalTime) + sessionTime;
+    localStorage.setItem("studyTime", totalTime);
+});
