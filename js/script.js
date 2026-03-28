@@ -388,47 +388,56 @@ if (SpeechRecognition) {
     console.log("Speech Recognition not supported in this browser.");
 }
 
-// AI Voice Response Function
+// --- 🔊 VOICE RESPONSE FINAL LOGIC ---
+
+// Elements ke reference (Make sure ye IDs index.html mein hon)
+const voicePill = document.getElementById("voiceStatusPill");
 const stopBtn = document.getElementById("stopVoiceBtn");
 
 function speakText(text) {
-    // 1. Purani koi voice chal rahi ho toh pehle use stop karo
+    // 1. Pehle se kuch chal raha ho toh cancel karo
     window.speechSynthesis.cancel();
 
-    // 2. Markdown aur special characters hatana (Cleaning)
-    const cleanText = text.replace(/[*#_`]/g, "")
-                          .replace(/https?:\/\/\S+/g, "link") // Links ko "link" bolega
-                          .trim();
+    // 2. Text Cleaning (Markdown aur Links hatana)
+    const cleanText = text
+        .replace(/[*#_`]/g, "")               // Markdown symbols hataye
+        .replace(/https?:\/\/\S+/g, "link")  // Links ko sirf "link" bolega
+        .trim();
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
-    // 3. Voice Customization
+    // 3. Voice Settings
     utterance.lang = 'en-US'; 
-    utterance.rate = 1.1; // Thodi fast speed (zyada natural lagti hai)
-    utterance.pitch = 1;  // Normal pitch
+    utterance.rate = 1.1; // Thodi natural fast speed
+    utterance.pitch = 1;
 
-    // 4. Show/Hide Stop Button Logic
+    // 4. UI Feedback (Pill Show/Hide)
     utterance.onstart = () => {
-        stopBtn.classList.add("active");
+        if (voicePill) voicePill.classList.add("active");
     };
 
     utterance.onend = () => {
-        stopBtn.classList.remove("active");
+        if (voicePill) voicePill.classList.remove("active");
     };
 
     utterance.onerror = () => {
-        stopBtn.classList.remove("active");
+        if (voicePill) voicePill.classList.remove("active");
     };
 
-    // 5. Speak!
+    // 5. Start Speaking
     window.speechSynthesis.speak(utterance);
 }
 
-// Stop Button Click Event
-stopBtn.addEventListener("click", () => {
-    window.speechSynthesis.cancel();
-    stopBtn.classList.remove("active");
-});
+// 🛑 Stop Button Event (Voice Pill ke andar wala button)
+if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+        window.speechSynthesis.cancel();
+        if (voicePill) voicePill.classList.remove("active");
+    });
+}
+
+
+
 
 
 // --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
