@@ -443,9 +443,3 @@ if (stopBtn) {
 
 
 
-// --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
-// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
-// speakText(reply); 
- ---
-// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
-// speakText(reply); 
