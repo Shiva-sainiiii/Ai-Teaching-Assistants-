@@ -389,23 +389,47 @@ if (SpeechRecognition) {
 }
 
 // AI Voice Response Function
+const stopBtn = document.getElementById("stopVoiceBtn");
+
 function speakText(text) {
-    // Markdown symbols ko remove karna taaki voice saaf aaye
-    const cleanText = text.replace(/[*#_`]/g, "");
+    // 1. Purani koi voice chal rahi ho toh pehle use stop karo
+    window.speechSynthesis.cancel();
+
+    // 2. Markdown aur special characters hatana (Cleaning)
+    const cleanText = text.replace(/[*#_`]/g, "")
+                          .replace(/https?:\/\/\S+/g, "link") // Links ko "link" bolega
+                          .trim();
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'hi-IN';
-    utterance.rate = 1; // Speed
-    utterance.pitch = 1;
     
-    // Voice select karna (optional)
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-        utterance.voice = voices.find(v => v.name.includes("Google")) || voices[0];
-    }
+    // 3. Voice Customization
+    utterance.lang = 'en-US'; 
+    utterance.rate = 1.1; // Thodi fast speed (zyada natural lagti hai)
+    utterance.pitch = 1;  // Normal pitch
 
+    // 4. Show/Hide Stop Button Logic
+    utterance.onstart = () => {
+        stopBtn.classList.add("active");
+    };
+
+    utterance.onend = () => {
+        stopBtn.classList.remove("active");
+    };
+
+    utterance.onerror = () => {
+        stopBtn.classList.remove("active");
+    };
+
+    // 5. Speak!
     window.speechSynthesis.speak(utterance);
 }
+
+// Stop Button Click Event
+stopBtn.addEventListener("click", () => {
+    window.speechSynthesis.cancel();
+    stopBtn.classList.remove("active");
+});
+
 
 // --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
 // Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
