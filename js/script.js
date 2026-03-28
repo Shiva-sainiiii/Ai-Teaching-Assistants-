@@ -390,28 +390,76 @@ if (SpeechRecognition) {
 
 // --- 🔊 VOICE RESPONSE FINAL LOGIC ---
 
-// Elements ke reference (Make sure ye IDs index.html mein hon)
+// --- VOICE FEATURE LOGIC (Optimized for Hindi) ---
+
+const micBtn = document.getElementById("micBtn");
+const inputField = document.getElementById("input");
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    
+    // ✨ CHANGE 1: Hindi recognition set kari hai
+    recognition.lang = 'hi-IN'; 
+
+    micBtn.addEventListener("click", () => {
+        if (micBtn.classList.contains("listening")) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    });
+
+    recognition.onstart = () => {
+        micBtn.classList.add("listening");
+        inputField.placeholder = "Suniye, main sun raha hoon...";
+    };
+
+    recognition.onend = () => {
+        micBtn.classList.remove("listening");
+        inputField.placeholder = "Ask about your PDF...";
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        inputField.value = transcript;
+        sendMsg();
+    };
+}
+
+// --- 🔊 VOICE RESPONSE FINAL LOGIC (Natural Hindi Accent) ---
+
 const voicePill = document.getElementById("voiceStatusPill");
 const stopBtn = document.getElementById("stopVoiceBtn");
 
 function speakText(text) {
-    // 1. Pehle se kuch chal raha ho toh cancel karo
     window.speechSynthesis.cancel();
 
-    // 2. Text Cleaning (Markdown aur Links hatana)
     const cleanText = text
-        .replace(/[*#_`]/g, "")               // Markdown symbols hataye
-        .replace(/https?:\/\/\S+/g, "link")  // Links ko sirf "link" bolega
+        .replace(/[*#_`]/g, "")
+        .replace(/https?:\/\/\S+/g, "link")
         .trim();
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
-    // 3. Voice Settings
-    utterance.lang = 'en-US'; 
-    utterance.rate = 1.1; // Thodi natural fast speed
-    utterance.pitch = 1;
+    // ✨ CHANGE 2: Hindi Voice Accent set kiya hai
+    utterance.lang = 'hi-IN'; 
+    
+    // Hindi ke liye 1.0 ya 1.1 speed sabse best hoti hai
+    utterance.rate = 1.0; 
+    utterance.pitch = 1.0;
 
-    // 4. UI Feedback (Pill Show/Hide)
+    // ✨ CHANGE 3: Behtareen Hindi Voice Select karna
+    // Browser ke paas kai voices hoti hain, hum 'hi-IN' wali filter karenge
+    const voices = window.speechSynthesis.getVoices();
+    const hindiVoice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi'));
+    
+    if (hindiVoice) {
+        utterance.voice = hindiVoice;
+    }
+
     utterance.onstart = () => {
         if (voicePill) voicePill.classList.add("active");
     };
@@ -424,22 +472,13 @@ function speakText(text) {
         if (voicePill) voicePill.classList.remove("active");
     };
 
-    // 5. Start Speaking
     window.speechSynthesis.speak(utterance);
 }
 
-// 🛑 Stop Button Event (Voice Pill ke andar wala button)
+// 🛑 Stop Button Event
 if (stopBtn) {
     stopBtn.addEventListener("click", () => {
         window.speechSynthesis.cancel();
         if (voicePill) voicePill.classList.remove("active");
     });
 }
-
-
-
-
-
-// --- UPDATE sendMsg() TO SUPPORT VOICE REPLY ---
-// Aapke existing sendMsg() function ke andar callAI ke baad ye line add karo:
-// speakText(reply); 
