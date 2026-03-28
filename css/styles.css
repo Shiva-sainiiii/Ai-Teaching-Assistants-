@@ -401,30 +401,71 @@ input[type="file"] {
 }
 
 
-/* Stop Button Styling */
-.stop-btn {
-    background: var(--danger);
+/* 🔊 Voice Status Pill */
+.voice-pill {
+    position: absolute;
+    bottom: 85px; /* Input wrapper ke theek upar */
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(59, 130, 246, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.85rem;
+    color: var(--text-main);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.voice-pill.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: all;
+}
+
+/* 🎵 Small Wave Animation inside Pill */
+.wave-lines {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+.wave-lines span {
+    width: 2px;
+    height: 10px;
+    background: var(--primary);
+    border-radius: 2px;
+    animation: wave-grow 1s infinite ease-in-out;
+}
+.wave-lines span:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+.wave-lines span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes wave-grow {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.5); }
+}
+
+#stopVoiceBtn {
+    background: rgba(255, 255, 255, 0.1);
     border: none;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    padding: 0;
-    margin-left: auto; /* Header ke right side mein */
-    display: none; /* By default hidden */
+    display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    font-size: 12px;
+    transition: background 0.2s;
 }
-
-/* Jab AI bol raha ho, toh button ko flash karwayenge */
-.stop-btn.active {
-    display: flex;
-    animation: pulse-red 2s infinite;
-}
-
-@keyframes pulse-red {
-    0% { opacity: 0.7; }
-    50% { opacity: 1; }
-    100% { opacity: 0.7; }
+#stopVoiceBtn:hover {
+    background: var(--danger);
 }
