@@ -5,7 +5,6 @@
     <title>Duke AI Pro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -35,21 +34,31 @@
         header i {
             font-size: 20px;
         }
+
+        /* Summary buttons container alignment */
+        .summary-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #downloadPdfBtn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            display: none; /* JS isey click hone par show karega */
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- 🔝 HEADER -->
     <header>
         <i class="ph-fill ph-robot"></i> 
         <span>By Shiva Saini</span>
 
-        <!-- 📊 Dashboard Button -->
         <a href="dashboard.html" class="dashboard-btn">📊 Dashboard</a>
     </header>
 
-    <!-- 📄 PDF PAGE -->
     <div id="pdfPage" class="page active">
         <div class="glass-card">
             <h3><i class="ph-fill ph-file-pdf"></i> Upload Document</h3>
@@ -71,29 +80,28 @@
         </div>
     </div>
 
-    <!-- 💬 CHAT PAGE -->
     <div id="chatPage" class="page">
         <div id="chat">
             <div class="msg bot" id="welcomeMsg">
                 Hello! I am Duke AI. Please upload a PDF first, then ask me anything about it.
             </div>
         </div>
-<div id="voiceStatusPill" class="voice-pill">
-<div class="wave-lines">
-<span></span><span></span><span></span>
-</div>
-<span>Duke is speaking...</span>
-<button id="stopVoiceBtn"><i class="ph-bold ph-x"></i></button>
-</div>
-<div class="chat-input-wrapper">
-    <button id="micBtn" class="icon-btn"><i class="ph ph-microphone"></i></button>
-    <input id="input" placeholder="Ask about your PDF..." autocomplete="off">
-    <button id="sendBtn"><i class="ph-bold ph-paper-plane-right"></i></button>
-</div>
-
+        
+        <div id="voiceStatusPill" class="voice-pill">
+            <div class="wave-lines">
+                <span></span><span></span><span></span>
+            </div>
+            <span>Duke is speaking...</span>
+            <button id="stopVoiceBtn"><i class="ph-bold ph-x"></i></button>
+        </div>
+        
+        <div class="chat-input-wrapper">
+            <button id="micBtn" class="icon-btn"><i class="ph ph-microphone"></i></button>
+            <input id="input" placeholder="Ask about your PDF..." autocomplete="off">
+            <button id="sendBtn"><i class="ph-bold ph-paper-plane-right"></i></button>
+        </div>
     </div>
 
-    <!-- 🧠 SUMMARY PAGE -->
     <div id="summaryPage" class="page">
         <div class="glass-card">
             <h3><i class="ph-fill ph-brain"></i> PDF Summary</h3>
@@ -101,15 +109,20 @@
                 Get a structured and concise summary of the uploaded document.
             </p>
 
-            <button id="summaryBtn">
-                <i class="ph-bold ph-magic-wand"></i> Generate Summary
-            </button>
+            <div class="summary-actions">
+                <button id="summaryBtn">
+                    <i class="ph-bold ph-magic-wand"></i> Generate Summary
+                </button>
+
+                <button id="downloadPdfBtn">
+                    <i class="ph-bold ph-download"></i> Download as PDF
+                </button>
+            </div>
 
             <div id="summaryResult" style="margin-top: 24px; line-height: 1.6;"></div>
         </div>
     </div>
 
-    <!-- ❓ QUIZ PAGE -->
     <div id="quizPage" class="page">
         <div class="glass-card">
             <h3><i class="ph-fill ph-question"></i> Interactive Quiz</h3>
@@ -125,7 +138,6 @@
         <div id="quizResult"></div>
     </div>
 
-    <!-- 🔽 NAVBAR -->
     <div class="navbar">
         <button class="nav-btn active" data-page="pdfPage">
             <i class="ph-fill ph-file-text"></i> PDF
@@ -144,7 +156,6 @@
         </button>
     </div>
 
-    <!-- JS -->
     <script src="js/script.js"></script>
 
 </body>
