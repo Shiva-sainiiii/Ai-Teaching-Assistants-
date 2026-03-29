@@ -37,6 +37,35 @@ document.getElementById("summaryBtn").addEventListener("click", generateSummary)
 // Quiz Button
 document.getElementById("quizBtn").addEventListener("click", generateQuiz);
 
+// Summary Download Button
+const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+if (downloadPdfBtn) {
+    downloadPdfBtn.addEventListener("click", () => {
+        const summaryContent = document.getElementById("summaryResult").innerHTML;
+        
+        // Ek temporary iframe/window create karke print prompt trigger karenge
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>Duke AI Pro - Summary</title>');
+        
+        // PDF styling clean rakhte hain
+        printWindow.document.write(`
+            <style>
+                body { font-family: 'Inter', sans-serif; padding: 40px; color: #333; }
+                h1 { color: #2563eb; }
+                p { line-height: 1.6; }
+                ul, ol { padding-left: 20px; }
+            </style>
+        `);
+        printWindow.document.write('</head><body>');
+        printWindow.document.write('<h1>PDF Summary by Duke AI</h1><hr style="border:0.5px solid #ccc; margin-bottom:20px;">');
+        printWindow.document.write(summaryContent);
+        printWindow.document.write('</body></html>');
+        
+        printWindow.document.close();
+        printWindow.print();
+    });
+}
+
 
 // --- CORE FUNCTIONS ---
 
@@ -145,7 +174,20 @@ async function sendMsg() {
     const reply = await callAI(fullPrompt);
     botMsgDiv.innerHTML = marked.parse(reply);
     
-    // ✨ New: AI will now speak the reply
+    // Copy button chat ke AI response me add kar rahe hain
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.innerHTML = `<i class="ph ph-copy"></i> Copy`;
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(botMsgDiv.innerText.replace('Copy', '').trim());
+        copyBtn.innerHTML = `<i class="ph ph-check"></i> Copied!`;
+        setTimeout(() => {
+            copyBtn.innerHTML = `<i class="ph ph-copy"></i> Copy`;
+        }, 2000);
+    };
+    botMsgDiv.appendChild(copyBtn);
+    
+    // AI will now speak the reply
     speakText(reply); 
     
     scrollToBottom();
@@ -162,6 +204,10 @@ async function generateSummary() {
     const res = await callAI(prompt);
 
     resultDiv.innerHTML = marked.parse(res);
+    
+    // Summary banne ke baad download button enable ho jayega
+    const downloadBtn = document.getElementById("downloadPdfBtn");
+    if (downloadBtn) downloadBtn.style.display = "inline-flex";
 }
 
 // ❓ QUIZ LOGIC
@@ -228,6 +274,20 @@ function addBotMessage(text) {
     const div = document.createElement("div");
     div.className = "msg bot";
     div.innerHTML = marked.parse(text);
+    
+    // Copy button add kiya normal bot messages ke liye
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.innerHTML = `<i class="ph ph-copy"></i> Copy`;
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(div.innerText.replace('Copy', '').trim());
+        copyBtn.innerHTML = `<i class="ph ph-check"></i> Copied!`;
+        setTimeout(() => {
+            copyBtn.innerHTML = `<i class="ph ph-copy"></i> Copy`;
+        }, 2000);
+    };
+    div.appendChild(copyBtn);
+    
     chat.appendChild(div);
     scrollToBottom();
 }
@@ -284,8 +344,26 @@ function renderInteractiveQuiz(data) {
     const container = document.getElementById("quizResult");
     container.innerHTML = "";
 
-    let score = 0; // ✅ SCORE TRACK
+    let score = 0;
+    let answeredCount = 0;
+    const totalQuestions = data.length;
 
+    // 1. Create Quiz Header (Score & Progress Text)
+    const quizHeader = document.createElement("div");
+    quizHeader.className = "quiz-header";
+    quizHeader.innerHTML = `
+        <span id="quizProgressText">Questions: 0/${totalQuestions}</span>
+        <span id="liveScoreText">Score: 0</span>
+    `;
+    container.appendChild(quizHeader);
+
+    // 2. Create Progress Bar
+    const progContainer = document.createElement("div");
+    progContainer.className = "progress-container";
+    progContainer.innerHTML = `<div class="progress-bar" id="quizProgressBar"></div>`;
+    container.appendChild(progContainer);
+
+    // 3. Render Questions
     data.forEach((item, index) => {
         const card = document.createElement("div");
         card.className = "quiz-card";
@@ -302,11 +380,13 @@ function renderInteractiveQuiz(data) {
                 if (card.dataset.answered) return;
 
                 card.dataset.answered = "true";
+                answeredCount++;
                 Array.from(optionsContainer.children).forEach(b => b.disabled = true);
 
+                // Check answer
                 if (opt === item.answer) {
                     btn.classList.add("correct");
-                    score++; // ✅ INCREASE SCORE
+                    score++;
                 } else {
                     btn.classList.add("wrong");
                     Array.from(optionsContainer.children).forEach(b => {
@@ -314,9 +394,31 @@ function renderInteractiveQuiz(data) {
                     });
                 }
 
-                // ✅ LAST QUESTION → SAVE SCORE
-                if (document.querySelectorAll(".quiz-card[data-answered='true']").length === data.length) {
+                // Update Progress & Score UI
+                document.getElementById("quizProgressText").innerText = `Questions: ${answeredCount}/${totalQuestions}`;
+                document.getElementById("liveScoreText").innerText = `Score: ${score}`;
+                
+                const progressPercent = (answeredCount / totalQuestions) * 100;
+                document.getElementById("quizProgressBar").style.width = `${progressPercent}%`;
+
+                // ✅ Check if Quiz Completed
+                if (answeredCount === totalQuestions) {
                     saveQuiz(score);
+                    
+                    // Show Final Score after a short delay
+                    setTimeout(() => {
+                        container.innerHTML = `
+                            <div class="final-score-card">
+                                <h3>🎉 Quiz Completed!</h3>
+                                <p>Your Final Score</p>
+                                <h2>${score} / ${totalQuestions}</h2>
+                                <p style="color: var(--text-muted);">${score === totalQuestions ? 'Perfect Score! 🔥' : 'Good job! Keep learning.'}</p>
+                                <button onclick="generateQuiz()" style="margin-top: 20px;">
+                                    <i class="ph-bold ph-arrow-clockwise"></i> Try Again
+                                </button>
+                            </div>
+                        `;
+                    }, 1000);
                 }
             };
 
@@ -327,6 +429,7 @@ function renderInteractiveQuiz(data) {
         container.appendChild(card);
     });
 }
+
 
 function saveTopic(topic) {
     let topics = JSON.parse(localStorage.getItem("topics")) || [];
@@ -438,8 +541,3 @@ if (stopBtn) {
         if (voicePill) voicePill.classList.remove("active");
     });
 }
-
-
-
-
-
