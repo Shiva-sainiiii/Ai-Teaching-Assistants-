@@ -10,10 +10,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body {
+        body {
       background: radial-gradient(circle at top right, #0f172a, #020617);
       font-family: 'Inter', sans-serif;
+      overflow-y: auto !important; /* 👈 Isse scrolling chalu ho jayegi */
+      height: auto !important;     /* 👈 Isse page apni poori height le lega */
     }
+
 
     .dashboard {
       padding: 20px;
