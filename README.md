@@ -1,6 +1,6 @@
-# 🤖 Duke AI Pro - AI Powered Learning Platform
+# 🤖 AI Powered Learning Platform
 
-**Duke AI Pro** is a modern, high-performance web application designed to help students and educators interact with PDF documents using Artificial Intelligence.  
+**Ai Teaching Assistant** is a modern, high-performance web application designed to help students and educators interact with PDF documents using Artificial Intelligence.  
 
 Now upgraded into a **data-driven learning platform**, it not only enables document interaction but also tracks user progress, analyzes learning behavior, and visualizes performance through a smart dashboard.
 
