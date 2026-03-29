@@ -236,11 +236,20 @@ async function generateQuiz() {
 }
 
 // 🔥 QUIZ SCORE TRACKING (NEW)
-function saveQuiz(score) {
+function saveQuiz(score, total) {
     let quizData = JSON.parse(localStorage.getItem("quizData")) || [];
-    quizData.push(score);
+    
+    // Yahan hum score ko percentage me badal rahe hain
+    let percentage = Math.round((score / total) * 100);
+    quizData.push(percentage);
+    
+    // Graph ko bohot lamba hone se rokne ke liye sirf last 10 tests save rakhenge
+    if (quizData.length > 10) quizData.shift();
+    
     localStorage.setItem("quizData", JSON.stringify(quizData));
 }
+
+
 
 // 🔥 SECURE AI CALL
 async function callAI(prompt) {
@@ -403,7 +412,7 @@ function renderInteractiveQuiz(data) {
 
                 // ✅ Check if Quiz Completed
                 if (answeredCount === totalQuestions) {
-                    saveQuiz(score);
+                    saveQuiz(score, totalQuestions); // <-- YE LINE THEEK KI GAYI HAI
                     
                     // Show Final Score after a short delay
                     setTimeout(() => {

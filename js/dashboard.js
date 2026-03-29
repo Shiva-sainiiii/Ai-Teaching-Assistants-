@@ -27,30 +27,50 @@ else {
         data: {
             labels: quizData.map((_, i) => `Test ${i + 1}`),
             datasets: [{
-                label: 'Quiz Score',
+                label: 'Score Percentage (%)',
                 data: quizData,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 borderWidth: 3,
-                tension: 0.3
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#3b82f6',
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     labels: {
-                        color: "white"
+                        color: "#94a3b8",
+                        font: { family: 'Inter', size: 12 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Score: ${context.parsed.y}%`;
+                        }
                     }
                 }
             },
             scales: {
                 x: {
-                    ticks: {
-                        color: "white"
-                    }
+                    ticks: { color: "#94a3b8" },
+                    grid: { display: false }
                 },
                 y: {
-                    ticks: {
-                        color: "white"
-                    }
+                    min: 0,
+                    max: 100, // Y-axis hamesha 0 se 100 rahega
+                    ticks: { 
+                        color: "#94a3b8",
+                        stepSize: 20,
+                        callback: function(value) { return value + "%"; }
+                    },
+                    grid: { color: "rgba(255, 255, 255, 0.05)" }
                 }
             }
         }
