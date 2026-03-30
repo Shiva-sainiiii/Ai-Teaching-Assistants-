@@ -142,8 +142,9 @@ Frontend
 
 ---
 
- 📁 Project Structure
+## 📁 Project Structure
 
+``` text 
 ai-teaching-assitants/
 │
 ├── index.html              # Main application UI
@@ -159,6 +160,7 @@ ai-teaching-assitants/
 ├── api/
 │   └── ask.js              # Secure AI API endpoint
 
+```
 ---
 
 ## ⚙️ How It Works
