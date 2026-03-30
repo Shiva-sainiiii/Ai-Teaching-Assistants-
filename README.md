@@ -142,8 +142,8 @@ Frontend
 
 ---
 
-## 📁 Project Structure
-*** 
+ 📁 Project Structure
+
 ai-teaching-assitants/
 │
 ├── index.html              # Main application UI
