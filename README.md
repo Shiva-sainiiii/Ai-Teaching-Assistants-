@@ -1,4 +1,4 @@
-🤖 AI Teaching Assistant – Smart Learning Platform
+## 🤖 AI Teaching Assistant – Smart Learning Platform
 
 🚀 An AI-powered, data-driven learning platform that transforms static PDFs into an interactive, intelligent, and trackable learning experience.
 
