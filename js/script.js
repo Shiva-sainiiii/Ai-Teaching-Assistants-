@@ -1,3 +1,51 @@
+// 1. Firebase Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, doc, setDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+
+// 2. Firebase Config (Jo tumne provide ki)
+const firebaseConfig = {
+    apiKey: "AIzaSyCMXebF7sLllONAqK0d1Cgryf1g7PHDf94",
+    authDomain: "ai-teaching-assistants.firebaseapp.com",
+    projectId: "ai-teaching-assistants",
+    storageBucket: "ai-teaching-assistants.firebasestorage.app",
+    messagingSenderId: "1092142076008",
+    appId: "1:1092142076008:web:d5c2f4e148fc8dcfb56bdd",
+    measurementId: "G-BBP298QGT8"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
+
+// 3. 🔑 Device ID setup (Har user ka apna unique ID browser me save rahega)
+let userId = localStorage.getItem("firebase_userId");
+if (!userId) {
+    userId = "user_" + Math.random().toString(36).substring(2, 11);
+    localStorage.setItem("firebase_userId", userId);
+}
+const userDocRef = doc(db, "user_data", userId);
+
+// 4. 🔥 Firebase Sync Functions
+async function updateFirebasePDFCount() {
+    await setDoc(userDocRef, { pdfCount: increment(1) }, { merge: true });
+}
+
+async function saveTopicToFirebase(topic) {
+    await setDoc(userDocRef, { topics: arrayUnion(topic) }, { merge: true });
+}
+
+async function saveQuizToFirebase(score, total) {
+    const percentage = Math.round((score / total) * 100);
+    await setDoc(userDocRef, { quizData: arrayUnion(percentage) }, { merge: true });
+}
+
+async function saveStudyTimeToFirebase(minutes) {
+    await setDoc(userDocRef, { studyTime: increment(minutes) }, { merge: true });
+}
+
+
 // File: js/script.js
 
 let pdfText = "";
@@ -87,7 +135,11 @@ function increasePDFCount() {
     let pdfCount = localStorage.getItem("pdfCount") || 0;
     pdfCount++;
     localStorage.setItem("pdfCount", pdfCount);
+    
+    // Cloud par update
+    updateFirebasePDFCount();
 }
+
 
 // 📄 PDF & IMAGE PROCESSING
 async function handleFileUpload(e) {
@@ -236,17 +288,18 @@ async function generateQuiz() {
 }
 
 // 🔥 QUIZ SCORE TRACKING (NEW)
+
 function saveQuiz(score, total) {
     let quizData = JSON.parse(localStorage.getItem("quizData")) || [];
-    
-    // Yahan hum score ko percentage me badal rahe hain
     let percentage = Math.round((score / total) * 100);
     quizData.push(percentage);
     
-    // Graph ko bohot lamba hone se rokne ke liye sirf last 10 tests save rakhenge
     if (quizData.length > 10) quizData.shift();
     
     localStorage.setItem("quizData", JSON.stringify(quizData));
+    
+    // Cloud par save
+    saveQuizToFirebase(score, total);
 }
 
 
@@ -440,13 +493,14 @@ function renderInteractiveQuiz(data) {
 }
 
 
+
+
 function saveTopic(topic) {
     let topics = JSON.parse(localStorage.getItem("topics")) || [];
-
     if (!topics.includes(topic)) {
         topics.push(topic);
+        saveTopicToFirebase(topic); // Cloud par save
     }
-
     localStorage.setItem("topics", JSON.stringify(topics));
 }
 
@@ -547,6 +601,9 @@ function speakText(text) {
 if (stopBtn) {
     stopBtn.addEventListener("click", () => {
         window.speechSynthesis.cancel();
+        if (voicePill) voicePill.classList.remove("active");
+    });
+}ncel();
         if (voicePill) voicePill.classList.remove("active");
     });
 }
