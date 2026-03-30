@@ -6,7 +6,7 @@
 
 ---
 
-📌 Overview
+# 📌 Overview
 
 AI Teaching Assistant is a modern web application that allows users to:
 
