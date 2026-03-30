@@ -603,7 +603,6 @@ if (stopBtn) {
         window.speechSynthesis.cancel();
         if (voicePill) voicePill.classList.remove("active");
     });
-}ncel();
-        if (voicePill) voicePill.classList.remove("active");
-    });
 }
+
+        
