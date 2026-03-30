@@ -1,12 +1,12 @@
-## 🤖 AI Teaching Assistant – Smart Learning Platform
+# 🤖 AI Teaching Assistant – Smart Learning Platform
 
 🚀 An AI-powered, data-driven learning platform that transforms static PDFs into an interactive, intelligent, and trackable learning experience.
 
-🔗 Live Demo: https://ai-teaching-assistants.vercel.app/
+### 🔗 Live Demo: https://ai-teaching-assistants.vercel.app/
 
 ---
 
-# 📌 Overview
+## 📌 Overview
 
 AI Teaching Assistant is a modern web application that allows users to:
 
@@ -19,9 +19,9 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-✨ Core Features
+## ✨ Core Features
 
-📄 AI Document Interaction
+### 📄 AI Document Interaction
 
 - Chat with uploaded PDFs in real-time
 - Context-aware AI responses
