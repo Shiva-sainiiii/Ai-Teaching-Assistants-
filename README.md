@@ -143,7 +143,7 @@ Frontend
 ---
 
 ## 📁 Project Structure
-
+*** 
 ai-teaching-assitants/
 │
 ├── index.html              # Main application UI
@@ -161,7 +161,7 @@ ai-teaching-assitants/
 
 ---
 
-⚙️ How It Works
+## ⚙️ How It Works
 
 1️⃣ Upload a PDF or image
 2️⃣ Text extraction (PDF.js / OCR)
@@ -172,7 +172,7 @@ ai-teaching-assitants/
 
 ---
 
-🚀 Future Enhancements
+## 🚀 Future Enhancements
 
 - 📂 Support for Word, Excel, CSV files
 - 📊 Advanced data analytics (business insights)
@@ -182,16 +182,16 @@ ai-teaching-assitants/
 
 ---
 
-👨‍💻 Author
+## 👨‍💻 Author
 
 Shiva Saini
 🎓 BCA Student | 💡 AI Developer | 🚀 Innovator
 
 ---
 
-⭐ Support
+## ⭐ Support
 
-If you like this project:
+*If you like this project:*
 
 - ⭐ Star the repository
 - 🍴 Fork it
@@ -199,12 +199,12 @@ If you like this project:
 
 ---
 
-📜 License
+## 📜 License
 
 This project is licensed under the MIT License
 
 ---
 
-🔥 Pro Tip
+## 🔥 Pro Tip
 
 👉 Add screenshots or GIF demos here to make your project stand out on GitHub.
