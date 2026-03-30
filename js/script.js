@@ -510,7 +510,11 @@ window.addEventListener("beforeunload", () => {
     let sessionTime = Math.floor((Date.now() - startTime) / 60000);
     totalTime = parseInt(totalTime) + sessionTime;
     localStorage.setItem("studyTime", totalTime);
+    
+    // 🔥 Cloud par update karne ke liye ye line add karo
+    saveStudyTimeToFirebase(sessionTime);
 });
+
 
 // --- VOICE FEATURE LOGIC (Optimized for Hindi) ---
 
