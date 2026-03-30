@@ -1,4 +1,5 @@
-# 🤖 AI Teaching Assistant – Smart Learning Platform
+# 🤖 AI Teaching Assistant -
+*Smart Learning Platform*
 
 🚀 An AI-powered, data-driven learning platform that transforms static PDFs into an interactive, intelligent, and trackable learning experience.
 
@@ -29,7 +30,7 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-🔍 OCR (Optical Character Recognition)
+## 🔍 OCR (Optical Character Recognition)
 
 - Detects scanned PDFs automatically
 - Extracts text using Tesseract.js
@@ -37,7 +38,7 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-🧠 Smart Summarization
+## 🧠 Smart Summarization
 
 - Structured, easy-to-read summaries
 - Bullet-point format
@@ -45,7 +46,7 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-❓ Interactive Quiz System
+## ❓ Interactive Quiz System
 
 - Auto-generated MCQs from PDF
 - Real-time scoring system
@@ -54,7 +55,7 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-🎤 Voice AI Integration
+## 🎤 Voice AI Integration
 
 - 🎙️ Speech-to-text (Hindi supported)
 - 🔊 AI voice responses
@@ -62,9 +63,9 @@ It combines Artificial Intelligence + OCR + Analytics + Voice Tech into a single
 
 ---
 
-📊 Smart Dashboard (Analytics)
+## 📊 Smart Dashboard (Analytics)
 
-Track your complete learning journey:
+*Track your complete learning journey:*
 
 - 📚 PDFs uploaded
 - 🧠 Topics explored
@@ -73,7 +74,7 @@ Track your complete learning journey:
 
 ---
 
-☁️ Cloud Data Sync
+## ☁️ Cloud Data Sync
 
 - Firebase Firestore integration
 - Unique device-based user ID
@@ -85,7 +86,7 @@ Track your complete learning journey:
 
 ---
 
-🎨 Premium UI/UX
+## 🎨 Premium UI/UX
 
 - Glassmorphism design
 - Modern dark theme
@@ -94,7 +95,7 @@ Track your complete learning journey:
 
 ---
 
-🛡️ Secure Backend
+## 🛡️ Secure Backend
 
 - API handled via Vercel Serverless Functions
 - Environment variables for API keys
@@ -102,7 +103,7 @@ Track your complete learning journey:
 
 ---
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 Frontend
 
@@ -112,7 +113,7 @@ Frontend
 
 ---
 
-Libraries & Tools
+## Libraries & Tools
 
 - PDF.js → PDF text extraction
 - Tesseract.js → OCR processing
@@ -122,28 +123,28 @@ Libraries & Tools
 
 ---
 
-Backend
+## Backend
 
 - Vercel Serverless Functions (Node.js)
 
 ---
 
-Database & Analytics
+## Database & Analytics
 
 - Firebase Firestore → Cloud database
 - Firebase Analytics → Usage tracking
 
 ---
 
-AI Engine
+## AI Engine
 
 - OpenRouter API (Nvidia Nemotron Model)
 
 ---
 
-📁 Project Structure
+## 📁 Project Structure
 
-duke-ai-pro/
+ai-teaching-assitants/
 │
 ├── index.html              # Main application UI
 ├── dashboard.html          # Analytics dashboard
