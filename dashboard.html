@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -158,5 +158,71 @@
  <script type="module" src="js/dashboard.js"></script>
  
 
+
+</body>
+</html>
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Duke AI</title>
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .topic-tag {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        /* Mobile scroll fix for dashboard */
+        body { overflow-y: auto; } 
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="ph-fill ph-chart-bar"></i>
+        <span>Your Progress</span>
+        <a href="index.html" class="dashboard-btn" style="background: var(--danger);"><i class="ph-bold ph-arrow-left"></i> Back</a>
+    </header>
+
+    <div class="dashboard page active" style="padding-top: 20px;">
+        <div class="cards" style="flex-wrap: wrap;">
+            <div class="card glass-card" style="min-width: 140px;">
+                <h3 style="justify-content: center; font-size: 1rem;"><i class="ph-fill ph-file-pdf"></i> PDFs Uploaded</h3>
+                <h1 id="pdfCount" style="font-size: 2.5rem; color: var(--primary);">0</h1>
+            </div>
+            
+            <div class="card glass-card" style="min-width: 140px;">
+                <h3 style="justify-content: center; font-size: 1rem;"><i class="ph-fill ph-clock"></i> Study Time</h3>
+                <h1 id="studyTime" style="font-size: 2.5rem; color: var(--success);">0 min</h1>
+            </div>
+        </div>
+
+        <div class="glass-card chart-container">
+            <h3><i class="ph-fill ph-trend-up"></i> Quiz Performance</h3>
+            <canvas id="progressChart"></canvas>
+        </div>
+
+        <div class="glass-card">
+            <h3><i class="ph-fill ph-hash"></i> Topics Discussed</h3>
+            <div id="topicsList" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div class="loader"><div class="spinner"></div> Loading topics...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>
