@@ -1,4 +1,4 @@
-/* File: css/styles.css */
+/* File: css/styles.css - RESPONSIVE DESKTOP-FRIENDLY */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -40,32 +40,43 @@ button,
 .quiz-option, 
 .file-upload-label,
 a {
-  -webkit-tap-highlight-color: transparent; /* Mobile tap blue highlight hatayega */
-  outline: none !important; /* Click outline hatayega */
+  -webkit-tap-highlight-color: transparent;
+  outline: none !important;
 }
 
-/* Text selection ko chhodkar click selection ko block karne ke liye */
 .nav-btn, button {
   user-select: none;
 }
 
 /* --- HEADER --- */
 header {
-  padding: 18px 20px;
-  text-align: center;
+  padding: 16px 20px;
   background: rgba(2, 6, 23, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-glass);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
   z-index: 10;
+  flex-wrap: wrap;
 }
-header i { color: var(--primary); font-size: 1.4rem; }
+
+header i { 
+  color: var(--primary); 
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+header span {
+  flex: 1;
+  text-align: center;
+  font-size: 0.95rem;
+  min-width: 100px;
+}
 
 /* --- PAGES --- */
 .page {
@@ -73,7 +84,7 @@ header i { color: var(--primary); font-size: 1.4rem; }
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 100px; /* Space for navbar */
+  padding-bottom: 90px;
   animation: fadeIn 0.3s ease-out forwards;
 }
 .page.active { display: block; }
@@ -101,6 +112,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 1.1rem;
 }
 h3 i { color: var(--primary); }
 
@@ -118,6 +130,8 @@ button {
   align-items: center;
   gap: 8px;
   justify-content: center;
+  white-space: nowrap;
+  font-size: 0.95rem;
 }
 button:hover {
   background: var(--primary-hover);
@@ -129,6 +143,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 input[type="file"] {
   display: none;
 }
+
 .file-upload-label {
   display: flex;
   flex-direction: column;
@@ -145,7 +160,11 @@ input[type="file"] {
   border-color: var(--primary);
   background: rgba(59, 130, 246, 0.1);
 }
-.file-upload-label i { font-size: 3rem; color: var(--primary); margin-bottom: 12px; }
+.file-upload-label i { 
+  font-size: 3rem; 
+  color: var(--primary); 
+  margin-bottom: 12px; 
+}
 
 #uploadStatus {
   margin-top: 16px;
@@ -169,10 +188,10 @@ input[type="file"] {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  align-items: flex-start;
 }
 
 .msg {
@@ -188,6 +207,7 @@ input[type="file"] {
 .user {
   background: var(--user-msg);
   margin-left: auto;
+  align-self: flex-end;
   border-bottom-right-radius: 4px;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
@@ -195,10 +215,11 @@ input[type="file"] {
 .bot {
   background: var(--bot-msg);
   margin-right: auto;
+  align-self: flex-start;
   border-bottom-left-radius: 4px;
   border: 1px solid var(--border-glass);
   position: relative;
-  padding-bottom: 40px; /* Copy button ke liye space */
+  padding-bottom: 40px;
 }
 
 /* Markdown Styles within Bot Messages */
@@ -210,14 +231,16 @@ input[type="file"] {
 .bot pre { background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; overflow-x: auto; margin-top: 8px; }
 
 .chat-input-wrapper {
-  padding: 15px 20px 85px 20px;
+  padding: 15px 20px;
   background: rgba(2, 6, 23, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--border-glass);
   display: flex;
-  gap: 8px; /* Thoda gap buttons ke beech */
-  position: relative;
+  gap: 8px;
+  position: sticky;
+  bottom: 70px;
+  z-index: 10;
 }
 
 .chat-input-wrapper input {
@@ -241,32 +264,33 @@ input[type="file"] {
   width: 48px;
   height: 48px;
   padding: 0;
+  flex-shrink: 0;
 }
 .chat-input-wrapper button i { font-size: 1.2rem; }
 
 /* Mic Button Styling */
 #micBtn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-glass);
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 #micBtn.listening {
-    background: var(--danger);
-    color: white;
-    box-shadow: 0 0 15px var(--danger);
-    animation: pulse-mic 1.5s infinite;
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 0 15px var(--danger);
+  animation: pulse-mic 1.5s infinite;
 }
 
 @keyframes pulse-mic {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 /* Copy button bot messages ke liye */
@@ -282,6 +306,8 @@ input[type="file"] {
   color: var(--text-muted);
   width: auto;
   height: auto;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 .copy-btn:hover {
   background: rgba(255,255,255,0.1);
@@ -290,71 +316,71 @@ input[type="file"] {
 
 /* 🔊 Voice Status Pill */
 .voice-pill {
-    position: absolute;
-    bottom: 85px; /* Input wrapper ke theek upar */
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: rgba(59, 130, 246, 0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--primary);
-    padding: 8px 16px;
-    border-radius: 99px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 15;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.85rem;
-    color: var(--text-main);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--primary);
+  padding: 8px 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  color: var(--text-main);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .voice-pill.active {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    pointer-events: all;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: all;
 }
 
 /* 🎵 Small Wave Animation inside Pill */
 .wave-lines {
-    display: flex;
-    gap: 2px;
-    align-items: center;
+  display: flex;
+  gap: 2px;
+  align-items: center;
 }
 .wave-lines span {
-    width: 2px;
-    height: 10px;
-    background: var(--primary);
-    border-radius: 2px;
-    animation: wave-grow 1s infinite ease-in-out;
+  width: 2px;
+  height: 10px;
+  background: var(--primary);
+  border-radius: 2px;
+  animation: wave-grow 1s infinite ease-in-out;
 }
 .wave-lines span:nth-child(2) { animation-delay: 0.2s; height: 14px; }
 .wave-lines span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes wave-grow {
-    0%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(1.5); }
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.5); }
 }
 
 #stopVoiceBtn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background 0.2s;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
 }
 #stopVoiceBtn:hover {
-    background: var(--danger);
+  background: var(--danger);
 }
 
 /* --- TYPING INDICATOR --- */
@@ -403,6 +429,8 @@ input[type="file"] {
   padding: 14px 16px;
   justify-content: flex-start;
   color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 .quiz-option:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);
@@ -451,6 +479,8 @@ input[type="file"] {
   background: var(--bg-glass);
   border-radius: 16px;
   border: 1px solid var(--border-glass);
+  margin: 20px auto;
+  max-width: 500px;
 }
 .final-score-card h2 {
   color: var(--primary);
@@ -489,19 +519,22 @@ input[type="file"] {
   padding: 8px 10px;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
   z-index: 20;
+  justify-content: space-around;
 }
 
 .nav-btn {
   flex: 1;
+  max-width: 100px;
   background: none;
   color: var(--text-muted);
-  font-size: 0.8rem;
-  padding: 10px 0;
+  font-size: 0.75rem;
+  padding: 10px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   border-radius: 12px;
+  transition: all 0.2s;
 }
 .nav-btn i { font-size: 1.4rem; transition: transform 0.2s; }
 .nav-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
@@ -510,29 +543,66 @@ input[type="file"] {
 
 /* --- DASHBOARD STYLES --- */
 .dashboard {
-  padding: 30px;
+  padding: 20px;
   color: white;
 }
 
 .cards {
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
   margin-bottom: 30px;
 }
 
 .card {
-  flex: 1;
   padding: 20px;
   border-radius: 15px;
   backdrop-filter: blur(10px);
-  background: rgba(255,255,255,0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+}
+
+.card h3 {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .chart-container {
-  background: rgba(255,255,255,0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
   padding: 20px;
   border-radius: 15px;
+  height: 350px;
+  position: relative;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+canvas {
+  max-height: 300px;
 }
 
 /* Custom Scrollbar */
@@ -541,5 +611,270 @@ input[type="file"] {
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
- white;
+/* ===================== TABLET RESPONSIVE (768px+) ===================== */
+@media (min-width: 768px) {
+  /* HEADER */
+  header {
+    padding: 18px 40px;
+    font-size: 1.1rem;
+  }
+
+  header span {
+    font-size: 1rem;
+  }
+
+  header i {
+    font-size: 1.5rem;
+  }
+
+  /* PAGES */
+  .page {
+    padding: 30px;
+    padding-bottom: 100px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* GLASS CARDS */
+  .glass-card {
+    padding: 32px;
+    margin-bottom: 30px;
+    border-radius: 20px;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  /* BUTTONS */
+  button {
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-size: 1rem;
+  }
+
+  .file-upload-label {
+    padding: 60px 40px;
+    border-radius: 20px;
+  }
+  .file-upload-label i { 
+    font-size: 4rem; 
+    margin-bottom: 16px; 
+  }
+
+  /* CHAT */
+  #chat {
+    padding: 30px;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .msg {
+    max-width: 70%;
+    padding: 16px 22px;
+    border-radius: 20px;
+    font-size: 1rem;
+  }
+
+  .chat-input-wrapper {
+    padding: 20px 30px;
+    gap: 12px;
+    margin: 0 auto;
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .chat-input-wrapper input {
+    padding: 16px 24px;
+    font-size: 1rem;
+  }
+
+  .chat-input-wrapper button {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* QUIZ */
+  .quiz-card {
+    padding: 28px;
+    border-radius: 16px;
+    margin-top: 24px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .quiz-question {
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+  }
+
+  .quiz-option {
+    padding: 16px 20px;
+    font-size: 1rem;
+  }
+
+  .quiz-header {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .final-score-card {
+    padding: 50px;
+    border-radius: 20px;
+    max-width: 600px;
+  }
+  .final-score-card h2 {
+    font-size: 2.5rem;
+    margin: 20px 0;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    padding: 12px 20px;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .nav-btn {
+    flex: 0 1 auto;
+    max-width: none;
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .nav-btn i { font-size: 1.5rem; }
+
+  /* Summary Actions */
+  .summary-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* DASHBOARD */
+  .dashboard {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .card {
+    padding: 28px;
+    border-radius: 18px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 32px;
+  }
+
+  .chart-container {
+    padding: 28px;
+    border-radius: 18px;
+    height: 450px;
+  }
+}
+
+/* ===================== DESKTOP RESPONSIVE (1024px+) ===================== */
+@media (min-width: 1024px) {
+  header {
+    padding: 20px 60px;
+  }
+
+  .page {
+    padding: 40px 60px;
+    max-width: 1400px;
+  }
+
+  .glass-card {
+    padding: 40px;
+  }
+
+  #chat {
+    max-width: 1100px;
+    padding: 40px;
+  }
+
+  .msg {
+    max-width: 65%;
+    padding: 18px 24px;
+  }
+
+  .chat-input-wrapper {
+    max-width: 1100px;
+    padding: 24px 40px;
+  }
+
+  .navbar {
+    padding: 16px 40px;
+    gap: 30px;
+  }
+
+  .dashboard {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .card {
+    padding: 30px;
+  }
+
+  .card p {
+    font-size: 36px;
+  }
+
+  .chart-container {
+    height: 500px;
+    padding: 40px;
+  }
+}
+
+/* ===================== ULTRA WIDE (1440px+) ===================== */
+@media (min-width: 1440px) {
+  .page {
+    max-width: 1500px;
+  }
+
+  #chat {
+    max-width: 1200px;
+  }
+
+  .msg {
+    max-width: 60%;
+  }
+
+  .chat-input-wrapper {
+    max-width: 1200px;
+  }
+
+  .dashboard {
+    max-width: 1500px;
+  }
+
+  .cards {
+    gap: 40px;
+  }
 }
