@@ -1,166 +1,120 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Ai Teaching Assistant</title></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <link rel="stylesheet" href="css/styles.css">
-
-    <style>
-        /* 🔥 Dashboard Button Styling */
-        .dashboard-btn {
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 12px;
-            margin-left: auto;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-        }
-
-        header i {
-            font-size: 20px;
-        }
-
-        /* Summary buttons container alignment */
-        .summary-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #downloadPdfBtn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-glass);
-            display: none; /* JS isey click hone par show karega */
-        }
-    </style>
-</head>
-
-<body>
-
-    <header>
-        <i class="ph-fill ph-robot"></i> 
-        <span>By Aayush Saini</span>
-
-        <a href="dashboard.html" class="dashboard-btn">📊 Dashboard</a>
-    </header>
-
-
-    <div id="pdfPage" class="page active">
-        <div class="glass-card">
-            <h3><i class="ph-fill ph-file-pdf"></i> Upload Document</h3>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-                Upload your PDF to start chatting, generating summaries, and taking quizzes.
-            </p>
-            
-            <label class="file-upload-label" for="pdfUpload">
-                <i class="ph ph-upload-simple"></i>
-                <span id="uploadText">Tap to browse or drag file here</span>
-            </label>
-
-            <input type="file" id="pdfUpload" accept="application/pdf,image/*" capture="environment">
-            
-            <div id="uploadStatus">
-                <i class="ph-fill ph-check-circle"></i> 
-                <span>PDF successfully loaded!</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="chatPage" class="page">
-        <div id="chat">
-            <div class="msg bot" id="welcomeMsg">
-                Hello! I am an Ai Teaching Assistant created by Shiva Saini. Please upload a PDF first, then ask me anything about it.
-            </div>
-        </div>
-        
-        <div id="voiceStatusPill" class="voice-pill">
-            <div class="wave-lines">
-                <span></span><span></span><span></span>
-            </div>
-            <span>Ai is speaking...</span>
-            <button id="stopVoiceBtn"><i class="ph-bold ph-x"></i></button>
-        </div>
-        
-        <div class="chat-input-wrapper">
-            <button id="micBtn" class="icon-btn"><i class="ph ph-microphone"></i></button>
-            <input id="input" placeholder="Ask about your PDF..." autocomplete="off">
-            <button id="sendBtn"><i class="ph-bold ph-paper-plane-right"></i></button>
-        </div>
-    </div>
-
-    <div id="summaryPage" class="page">
-        <div class="glass-card">
-            <h3><i class="ph-fill ph-brain"></i> PDF Summary</h3>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-                Get a structured and concise summary of the uploaded document.
-            </p>
-
-            <div class="summary-actions">
-                <button id="summaryBtn">
-                    <i class="ph-bold ph-magic-wand"></i> Generate Summary
-                </button>
-
-                <button id="downloadPdfBtn">
-                    <i class="ph-bold ph-download"></i> Download as PDF
-                </button>
-            </div>
-
-            <div id="summaryResult" style="margin-top: 24px; line-height: 1.6;"></div>
-        </div>
-    </div>
-
-    <div id="quizPage" class="page">
-        <div class="glass-card">
-            <h3><i class="ph-fill ph-question"></i> Interactive Quiz</h3>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-                Test your knowledge with an AI-generated multiple-choice quiz based on the PDF.
-            </p>
-
-            <button id="quizBtn">
-                <i class="ph-bold ph-lightning"></i> Generate Quiz
-            </button>
-        </div>
-
-        <div id="quizResult"></div>
-    </div>
-
-    <div class="navbar">
-        <button class="nav-btn active" data-page="pdfPage">
-            <i class="ph-fill ph-file-text"></i> PDF
-        </button>
-
-        <button class="nav-btn" data-page="chatPage">
-            <i class="ph-fill ph-chats"></i> Chat
-        </button>
-
-        <button class="nav-btn" data-page="summaryPage">
-            <i class="ph-fill ph-brain"></i> Summary
-        </button>
-
-        <button class="nav-btn" data-page="quizPage">
-            <i class="ph-fill ph-exam"></i> Quiz
-        </button>
-    </div>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Margin - teaching assistant for your documents</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='3' width='16' height='18' rx='3' fill='none' stroke='%2318181b' stroke-width='1.6'/%3E%3Cpath d='M9 3v18' stroke='%231c7c63' stroke-width='1.6'/%3E%3C/svg%3E">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="css/styles.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.js"></script>
 <script type="module" src="js/script.js"></script>
+</head>
+<body>
+<div class="shell">
+<aside class="rail">
+  <a class="brand" href="#doc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 3v18" stroke="var(--acc)"/><path d="M13 8h4M13 12h4"/></svg>Margin</a>
+  <nav id="nav" aria-label="Sections">
+    <a href="#doc" data-go="doc"><i class="ph ph-file-text"></i><span>Document</span></a>
+    <a href="#chat" data-go="chat"><i class="ph ph-chats-circle"></i><span>Ask</span></a>
+    <a href="#summary" data-go="summary"><i class="ph ph-list-bullets"></i><span>Summary</span></a>
+    <a href="#quiz" data-go="quiz"><i class="ph ph-exam"></i><span>Quiz</span></a>
+    <a href="#progress" data-go="progress"><i class="ph ph-chart-line-up"></i><span>Progress</span></a>
+  </nav>
+  <div class="rail-foot">
+    <p class="docchip" id="docChip"><span class="dot"></span><span id="docChipText">No document yet</span></p>
+    <button id="theme" class="ghost icon" aria-label="Switch light or dark theme"><i class="ph ph-circle-half"></i></button>
+    <small>Built by Shiva Saini</small>
+  </div>
+</aside>
 
+<main>
+<section class="view" id="v-doc">
+  <div class="split">
+    <div>
+      <p class="kicker">Step 1</p>
+      <h1>Start with a document</h1>
+      <p class="lede">Upload a PDF or a photo of a page. Text is extracted in your browser; only the passages relevant to your request are sent to the AI.</p>
+      <dl class="facts" id="facts" hidden>
+        <div><dt>File</dt><dd id="fName"></dd></div>
+        <div><dt>Pages</dt><dd id="fPages" class="mono"></dd></div>
+        <div><dt>Words</dt><dd id="fWords" class="mono"></dd></div>
+        <div><dt>Read as</dt><dd id="fKind"></dd></div>
+      </dl>
+      <div class="actions" id="next" hidden>
+        <a class="btn" href="#chat">Ask a question</a><a class="btn ghost" href="#summary">Summarise</a><a class="btn ghost" href="#quiz">Take a quiz</a>
+      </div>
+    </div>
+    <label class="drop" id="drop" for="file">
+      <i class="ph ph-upload-simple"></i>
+      <strong id="dropTitle">Drop a file here, or browse</strong>
+      <span id="dropSub">PDF, JPG or PNG. Scanned pages are read with OCR.</span>
+    </label>
+    <input type="file" id="file" accept="application/pdf,image/*">
+  </div>
+</section>
 
+<section class="view" id="v-chat" hidden>
+  <header class="vh">
+    <div><p class="kicker">Ask</p><h2>Questions about your document</h2></div>
+    <button class="ghost" id="readBtn" aria-pressed="false"><i class="ph ph-speaker-high"></i>Read answers aloud</button>
+  </header>
+  <div id="chat" class="chat" aria-live="polite">
+    <div class="empty" id="chatEmpty"><p id="emptyMsg">Add a document first, then ask anything about it.</p><div class="chips" id="chips" hidden></div></div>
+  </div>
+  <form class="composer" id="form">
+    <button type="button" id="micBtn" class="ghost icon" aria-label="Speak your question"><i class="ph ph-microphone"></i></button>
+    <button type="button" id="langBtn" class="ghost lang" aria-label="Voice language">EN</button>
+    <input id="input" placeholder="Ask about your document" autocomplete="off" aria-label="Your question">
+    <button class="send" aria-label="Send"><i class="ph ph-arrow-up"></i></button>
+  </form>
+</section>
+
+<section class="view" id="v-summary" hidden>
+  <header class="vh"><div><p class="kicker">Summary</p><h2>The short version</h2></div></header>
+  <div class="controls no-print">
+    <div class="seg" id="sumMode"><button class="on" data-m="points">Key points</button><button data-m="notes">Study notes</button><button data-m="simple">Plain language</button></div>
+    <button class="btn" id="sumBtn"><i class="ph ph-pencil-simple-line"></i>Write summary</button>
+  </div>
+  <article class="prose" id="sumOut"><p class="muted">Pick a style, then write the summary.</p></article>
+  <div class="actions no-print" id="sumActs" hidden>
+    <button class="ghost" id="sumCopy"><i class="ph ph-copy"></i><span>Copy</span></button>
+    <button class="ghost" id="sumPrint"><i class="ph ph-download-simple"></i>Save as PDF</button>
+  </div>
+</section>
+
+<section class="view" id="v-quiz" hidden>
+  <header class="vh"><div><p class="kicker">Quiz</p><h2>Check what stuck</h2></div></header>
+  <div class="controls">
+    <div class="seg" id="qCount"><button class="on" data-n="5">5 questions</button><button data-n="10">10 questions</button></div>
+    <button class="btn" id="quizBtn"><i class="ph ph-lightning"></i>Build quiz</button>
+  </div>
+  <div id="quizBox"><p class="muted">Pick a length and build a quiz. Keys 1-4 or A-D answer, Enter moves on.</p></div>
+</section>
+
+<section class="view" id="v-progress" hidden>
+  <header class="vh"><div><p class="kicker">Progress</p><h2>How it is going</h2></div><p class="sync" id="sync"><span class="dot"></span><span id="syncTxt">Saved on this device</span></p></header>
+  <div class="pgrid">
+    <div><p class="label">Average quiz score</p><p class="big mono" id="avg">--</p><p class="muted" id="avgSub">No quizzes yet</p></div>
+    <dl class="stats">
+      <div><dt>Documents read</dt><dd class="mono" id="sDocs">0</dd></div>
+      <div><dt>Questions asked</dt><dd class="mono" id="sQs">0</dd></div>
+      <div><dt>Quizzes taken</dt><dd class="mono" id="sQuiz">0</dd></div>
+      <div><dt>Study time</dt><dd class="mono" id="sTime">0 min</dd></div>
+    </dl>
+  </div>
+  <div class="chartwrap"><canvas id="chart" aria-label="Quiz scores over time"></canvas><p class="empty" id="chartEmpty">Finish a quiz and your scores plot here.</p></div>
+  <h3>Recent questions</h3>
+  <ol class="recent" id="recent"></ol>
+</section>
+</main>
+</div>
 </body>
 </html>
-
