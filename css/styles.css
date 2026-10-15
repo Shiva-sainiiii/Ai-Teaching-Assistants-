@@ -138,7 +138,7 @@ dd{text-align:right;overflow-wrap:anywhere}
 }
 
 /* palettes: orange, and black & white (each follows light/dark) */
-[data-palette=orange]{--acc:#c2571a;--wash:#fbf0e8}
+[data-palette=orange]:not([data-theme=dark]){--bg:#fcdec4;--line:#f0c3a2;--wash:#fef0e4;--mut:#5a5a62;--acc:#a24a1f;--bad:#a3262a;--sh:0 14px 32px -18px rgba(120,60,10,.3)}
 [data-palette=mono]{--acc:#18181b;--wash:#f0f0f1}
 [data-theme=dark][data-palette=orange]{--acc:#e0975c;--wash:#241a12}
 [data-theme=dark][data-palette=mono]{--acc:#ececee;--wash:#1c1c1f}

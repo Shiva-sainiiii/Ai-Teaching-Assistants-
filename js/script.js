@@ -56,7 +56,7 @@ $("#theme").onclick = () => {
 /* palette */
 const setPal = p => { document.documentElement.dataset.palette = p; try { localStorage.setItem("palette", p); } catch {} $$("#pal button").forEach(b => b.classList.toggle("on", b.dataset.p === p)); if (!$("#v-progress").hidden) renderProgress(); };
 $$("#pal button").forEach(b => b.onclick = () => setPal(b.dataset.p));
-$$("#pal button").forEach(b => b.classList.toggle("on", b.dataset.p === (document.documentElement.dataset.palette || "emerald")));
+$$("#pal button").forEach(b => b.classList.toggle("on", b.dataset.p === (document.documentElement.dataset.palette || "orange")));
 
 /* ---------- library: documents persist in IndexedDB ---------- */
 const idb = new Promise(ok => { try { const r = indexedDB.open("margin", 1); r.onupgradeneeded = () => r.result.createObjectStore("docs", { keyPath: "id" }); r.onsuccess = () => ok(r.result); r.onerror = () => ok(null); } catch { ok(null); } });
