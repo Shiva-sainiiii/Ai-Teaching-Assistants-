@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Margin - teaching assistant for your documents</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='3' width='16' height='18' rx='3' fill='none' stroke='%2318181b' stroke-width='1.6'/%3E%3Cpath d='M9 3v18' stroke='%231c7c63' stroke-width='1.6'/%3E%3C/svg%3E">
-<script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
+<script>try{document.documentElement.dataset.palette=localStorage.getItem("palette")||"emerald";document.documentElement.dataset.theme=localStorage.getItem("theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
@@ -30,7 +30,7 @@
   </nav>
   <div class="rail-foot">
     <p class="docchip" id="docChip"><span class="dot"></span><span id="docChipText">No document yet</span></p>
-    <button id="theme" class="ghost icon" aria-label="Switch light or dark theme"><i class="ph ph-circle-half"></i></button>
+    <div class="tools"><div class="pal" id="pal" role="group" aria-label="Colour palette"><button data-p="emerald" style="--sw:#1c7c63" aria-label="Emerald"></button><button data-p="orange" style="--sw:#c2571a" aria-label="Orange"></button><button data-p="mono" style="--sw:linear-gradient(135deg,#18181b 50%,#fafafa 50%)" aria-label="Black and white"></button></div><button id="theme" class="ghost icon" aria-label="Switch light or dark theme"><i class="ph ph-circle-half"></i></button></div>
     <small>Built by Shiva Saini</small>
   </div>
 </aside>
@@ -52,12 +52,13 @@
         <a class="btn" href="#chat">Ask a question</a><a class="btn ghost" href="#summary">Summarise</a><a class="btn ghost" href="#quiz">Take a quiz</a>
       </div>
     </div>
-    <label class="drop" id="drop" for="file">
+    <div><label class="drop" id="drop" for="file">
       <i class="ph ph-upload-simple"></i>
       <strong id="dropTitle">Drop a file here, or browse</strong>
       <span id="dropSub">PDF, JPG or PNG. Scanned pages are read with OCR.</span>
     </label>
-    <input type="file" id="file" accept="application/pdf,image/*">
+    <input type="file" id="file" accept="application/pdf,image/*" multiple>
+    <div class="lib" id="lib" hidden><h3>Library</h3><ul class="recent" id="libList"></ul></div></div>
   </div>
 </section>
 
@@ -66,6 +67,7 @@
     <div><p class="kicker">Ask</p><h2>Questions about your document</h2></div>
     <button class="ghost" id="readBtn" aria-pressed="false"><i class="ph ph-speaker-high"></i>Read answers aloud</button>
   </header>
+  <div class="controls" id="scopeBox" hidden><div class="seg" id="scope"><button class="on" data-s="one">This document</button><button data-s="all">All documents</button></div></div>
   <div id="chat" class="chat" aria-live="polite">
     <div class="empty" id="chatEmpty"><p id="emptyMsg">Add a document first, then ask anything about it.</p><div class="chips" id="chips" hidden></div></div>
   </div>

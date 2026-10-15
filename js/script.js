@@ -53,8 +53,20 @@ $("#theme").onclick = () => {
   if (!$("#v-progress").hidden) renderProgress();
 };
 
+/* palette */
+const setPal = p => { document.documentElement.dataset.palette = p; try { localStorage.setItem("palette", p); } catch {} $$("#pal button").forEach(b => b.classList.toggle("on", b.dataset.p === p)); if (!$("#v-progress").hidden) renderProgress(); };
+$$("#pal button").forEach(b => b.onclick = () => setPal(b.dataset.p));
+$$("#pal button").forEach(b => b.classList.toggle("on", b.dataset.p === (document.documentElement.dataset.palette || "emerald")));
+
+/* ---------- library: documents persist in IndexedDB ---------- */
+const idb = new Promise(ok => { try { const r = indexedDB.open("margin", 1); r.onupgradeneeded = () => r.result.createObjectStore("docs", { keyPath: "id" }); r.onsuccess = () => ok(r.result); r.onerror = () => ok(null); } catch { ok(null); } });
+const tx = async (mode, fn) => { const db = await idb; if (!db) return null; return new Promise(ok => { try { const t = db.transaction("docs", mode), r = fn(t.objectStore("docs")); t.oncomplete = () => ok(r?.result ?? null); t.onerror = t.onabort = () => ok(null); } catch { ok(null); } }); };
+const dbAll = () => tx("readonly", s => s.getAll()).then(r => r || []);
+const dbPut = d => tx("readwrite", s => s.put(d));
+const dbDel = id => tx("readwrite", s => s.delete(id));
+
 /* ---------- document ingestion ---------- */
-const S = { pages: [], hist: [], read: ls.get("read", false) };
+const S = { docs: [], id: null, all: false, pages: [], hist: [], read: ls.get("read", false) };
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 const drop = $("#drop"), file = $("#file"), chat = $("#chat");
 const say = (t, bad) => { $("#dropSub").textContent = t; $("#dropSub").classList.toggle("err", !!bad); };
@@ -82,50 +94,98 @@ async function ingest(f) {
       kind = "ocr"; say("Reading text from image"); pages = [(await Tesseract.recognize(f, "eng")).data.text];
     } else throw new Error("Use a PDF, JPG or PNG file.");
     if (!pages.join("").trim()) throw new Error("No readable text found in this file.");
-    S.pages = pages; S.hist = [];
-    $$(".m", chat).forEach(n => n.remove());
-    $("#fName").textContent = f.name; $("#fPages").textContent = pages.length;
-    $("#fWords").textContent = pages.join(" ").split(/\s+/).filter(Boolean).length.toLocaleString();
-    $("#fKind").textContent = kind === "ocr" ? "OCR (scanned)" : "Text layer";
-    $("#facts").hidden = $("#next").hidden = false;
-    $("#docChipText").textContent = f.name; $("#docChip .dot").classList.add("ok");
-    $("#emptyMsg").textContent = "Ask anything about this document. A few ideas:"; $("#chips").hidden = $("#chatEmpty").hidden = false;
-    $("#dropTitle").textContent = "Replace document"; say("Drop another file or click to browse.");
+    const d = { id: Date.now().toString(36), name: f.name, kind, pages, words: pages.join(" ").split(/\s+/).filter(Boolean).length, added: Date.now() };
+    S.docs.unshift(d); await dbPut(d); activate(d.id); say("Drop more files or click to browse.");
     ls.set("pdfCount", ls.get("pdfCount", 0) + 1); sync({ pdfCount: increment(1) });
   } catch (e) { console.error(e); say(e.message || "Could not read this file.", true); }
   finally { drop.classList.remove("busy"); file.value = ""; }
 }
-file.onchange = () => ingest(file.files[0]);
+file.onchange = async () => { for (const f of [...file.files]) await ingest(f); };
 ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
-drop.addEventListener("drop", e => ingest(e.dataTransfer.files[0]));
+drop.addEventListener("drop", async e => { for (const f of [...e.dataTransfer.files]) await ingest(f); });
+
+const EMPTY_SUM = '<p class="muted">Pick a style, then write the summary.</p>', EMPTY_QUIZ = '<p class="muted">Pick a length and build a quiz. Keys 1-4 or A-D answer, Enter moves on.</p>';
+function activate(id) {
+  const d = S.docs.find(x => x.id === id); if (!d) return;
+  S.id = id; S.pages = d.pages; S.hist = []; ls.set("activeDoc", id); Q = null;
+  $$(".m", chat).forEach(n => n.remove());
+  $("#sumOut").innerHTML = EMPTY_SUM; $("#sumActs").hidden = true; $("#quizBox").innerHTML = EMPTY_QUIZ;
+  $("#fName").textContent = d.name; $("#fPages").textContent = d.pages.length; $("#fWords").textContent = d.words.toLocaleString();
+  $("#fKind").textContent = d.kind === "ocr" ? "OCR (scanned)" : "Text layer";
+  $("#facts").hidden = $("#next").hidden = false;
+  $("#docChipText").textContent = d.name; $("#docChip .dot").classList.add("ok");
+  $("#emptyMsg").textContent = "Ask anything about this document. A few ideas:"; $("#chips").hidden = $("#chatEmpty").hidden = false;
+  $("#dropTitle").textContent = "Add another document"; renderLib();
+}
+function renderLib() {
+  $("#lib").hidden = !S.docs.length; $("#scopeBox").hidden = S.docs.length < 2;
+  if (S.docs.length < 2) { S.all = false; $$("#scope button").forEach(b => b.classList.toggle("on", b.dataset.s === "one")); }
+  const ul = $("#libList"); ul.innerHTML = "";
+  S.docs.forEach(d => {
+    const open = mk("button", { type: "button", className: "open", innerHTML: "<span></span><small></small>", onclick: () => activate(d.id) });
+    open.firstChild.textContent = d.name; open.lastChild.textContent = `${d.pages.length} pp - ${d.words.toLocaleString()} words` + (d.id === S.id ? " - reading now" : "");
+    const del = mk("button", { type: "button", className: "del", innerHTML: '<i class="ph ph-trash"></i>', onclick: () => removeDoc(d.id) });
+    del.setAttribute("aria-label", "Remove " + d.name);
+    const li = mk("li", { className: d.id === S.id ? "cur" : "" }); li.append(open, del); ul.append(li);
+  });
+}
+async function removeDoc(id) {
+  S.docs = S.docs.filter(x => x.id !== id); await dbDel(id);
+  if (S.id === id) {
+    if (S.docs.length) activate(S.docs[0].id);
+    else {
+      S.id = null; S.pages = []; S.hist = []; ls.set("activeDoc", null); Q = null;
+      $$(".m", chat).forEach(n => n.remove()); $("#sumOut").innerHTML = EMPTY_SUM; $("#sumActs").hidden = true; $("#quizBox").innerHTML = EMPTY_QUIZ;
+      $("#facts").hidden = $("#next").hidden = $("#chips").hidden = true; $("#chatEmpty").hidden = false;
+      $("#emptyMsg").textContent = "Add a document first, then ask anything about it."; $("#docChipText").textContent = "No document yet";
+      $("#docChip .dot").classList.remove("ok"); $("#dropTitle").textContent = "Drop a file here, or browse";
+    }
+  }
+  renderLib();
+}
+seg("#scope", b => S.all = b.dataset.s === "all");
+(async () => { S.docs = (await dbAll()).sort((a, b) => b.added - a.added); if (S.docs.length) { const id = ls.get("activeDoc", null); activate(S.docs.some(d => d.id === id) ? id : S.docs[0].id); } })();
 
 /* ---------- retrieval: score ~1000 char chunks, keep page numbers ---------- */
 const STOP = new Set("the and for are was with that this what how why who when which about from into does tell explain give list please can you your".split(" "));
-const fmt = cs => cs.map(c => `[Page ${c.p}]\n${c.t}`).join("\n\n");
-function sample(max) {
-  const n = S.pages.length, full = S.pages.reduce((a, t) => a + t.length, 0);
-  let idx = [...S.pages.keys()], per = Infinity;
+const fmt = cs => cs.map(c => `[${c.n ? c.n + ", " : ""}Page ${c.p}]\n${c.t}`).join("\n\n");
+function sample(max, P = S.pages) {
+  const n = P.length, full = P.reduce((a, t) => a + t.length, 0);
+  let idx = [...P.keys()], per = Infinity;
   if (full > max) { per = Math.max(300, Math.floor(max / n)); const k = Math.min(n, Math.floor(max / per)); idx = Array.from({ length: k }, (_, i) => Math.floor(i * n / k)); }
-  return idx.map(i => ({ p: i + 1, t: S.pages[i].slice(0, per) }));
+  return idx.map(i => ({ p: i + 1, t: P[i].slice(0, per) }));
 }
 function retrieve(q) {
   const terms = (q.toLowerCase().match(/[\p{L}\p{M}\p{N}]+/gu) || []).filter(w => w.length > 2 && !STOP.has(w));
   const chunks = [];
-  S.pages.forEach((t, i) => { for (let o = 0; o < t.length; o += 900) { const c = t.slice(o, o + 1000); chunks.push({ p: i + 1, t: c, l: c.toLowerCase() }); } });
+  (S.all ? S.docs : S.docs.filter(d => d.id === S.id)).forEach(d => d.pages.forEach((t, i) => { for (let o = 0; o < t.length; o += 900) { const c = t.slice(o, o + 1000); chunks.push({ p: i + 1, n: d.name, d: d.id, t: c, l: c.toLowerCase() }); } }));
   const hits = chunks.map(c => ({ c, s: terms.reduce((n, w) => n + c.l.split(w).length - 1, 0) })).filter(x => x.s > 0)
-    .sort((a, b) => b.s - a.s).slice(0, 6).map(x => x.c).sort((a, b) => a.p - b.p);
-  return hits.length ? hits : sample(6000);
+    .sort((a, b) => b.s - a.s).slice(0, 6).map(x => x.c).sort((a, b) => a.d === b.d ? a.p - b.p : a.d < b.d ? -1 : 1);
+  return hits.length ? hits : S.all ? S.docs.flatMap(d => sample(Math.floor(6000 / S.docs.length), d.pages).map(c => ({ ...c, n: d.name, d: d.id }))) : sample(6000);
 }
 
 /* ---------- AI ---------- */
-async function callAI(prompt, history = []) {
+async function callAI(prompt, history = [], onText) {
   let res;
-  try { res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, history }) }); }
+  try { res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, history, stream: !!onText }) }); }
   catch { throw new Error("Can't reach the server. Check your connection."); }
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.reply) throw new Error(data.error || "The AI did not answer. Try again.");
-  return data.reply;
+  if (!res.ok || !onText || !res.body || (res.headers.get("content-type") || "").includes("json")) {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.reply) throw new Error(data.error || "The AI did not answer. Try again.");
+    onText?.(data.reply); return data.reply;
+  }
+  const rd = res.body.getReader(), dec = new TextDecoder(); let full = "", frame = 0;
+  try {
+    for (;;) {
+      const { done, value } = await rd.read(); if (done) break;
+      full += dec.decode(value, { stream: true });
+      if (!frame) frame = requestAnimationFrame(() => { frame = 0; onText(full); });
+    }
+  } catch { if (!full) throw new Error("The connection dropped. Try again."); }
+  cancelAnimationFrame(frame);
+  if (!full.trim()) throw new Error("The AI did not answer. Try again.");
+  onText(full); return full;
 }
 
 /* ---------- voice ---------- */
@@ -164,18 +224,20 @@ async function ask(q) {
   $("#chatEmpty").hidden = true; topic(q);
   const un = addMsg("u"); un.textContent = q;
   const b = addMsg("b"); b.innerHTML = skel();
-  const ctx = retrieve(q), pages = [...new Set(ctx.map(c => c.p))].slice(0, 6);
+  const ctx = retrieve(q), pages = [...new Set(ctx.map(c => (S.all && c.n ? c.n.slice(0, 18) + " " : "") + "p." + c.p))].slice(0, 6);
   try {
-    const r = await callAI(`Document excerpts:\n${fmt(ctx)}\n\nQuestion: ${q}`, S.hist.slice(-6));
+    b.classList.add("live");
+    const r = await callAI(`Document excerpts:\n${fmt(ctx)}\n\nQuestion: ${q}`, S.hist.slice(-6), t => { b.innerHTML = `<div class="prose">${md(t)}</div>`; b.scrollIntoView({ block: "end" }); });
+    b.classList.remove("live");
     S.hist.push({ role: "user", content: q }, { role: "assistant", content: r });
     b.innerHTML = `<div class="prose">${md(r)}</div>`;
-    const meta = mk("div", { className: "meta", innerHTML: "<span>Read from</span>" + pages.map(p => `<span class="src">p.${p}</span>`).join("") });
+    const meta = mk("div", { className: "meta", innerHTML: "<span>Read from</span>" + pages.map(p => `<span class="src">${esc(p)}</span>`).join("") });
     const listen = mini("Listen", "speaker-high", x => speak(r, x));
     meta.append(mini("Copy", "copy", x => { navigator.clipboard?.writeText(r); x.lastChild.textContent = " Copied"; setTimeout(() => x.lastChild.textContent = " Copy", 1600); }), listen);
     b.append(meta);
     if (S.read) speak(r, listen);
   } catch (e) {
-    b.innerHTML = `<p class="err">${esc(e.message)}</p>`;
+    b.classList.remove("live"); b.innerHTML = `<p class="err">${esc(e.message)}</p>`;
     b.append(mk("div", { className: "meta" })); $(".meta", b).append(mini("Retry", "arrow-clockwise", () => { un.remove(); b.remove(); ask(q); }));
   }
   b.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -192,8 +254,8 @@ let mode = "points"; seg("#sumMode", b => mode = b.dataset.m);
 $("#sumBtn").onclick = async () => {
   if (needDoc()) return;
   const out = $("#sumOut"); out.innerHTML = skel(); $("#sumActs").hidden = true; $("#sumBtn").disabled = true;
-  try { const r = await callAI(`${MODES[mode]} Use Markdown.\n\n${fmt(sample(10000))}`); out.innerHTML = md(r); out.dataset.raw = r; $("#sumActs").hidden = false; }
-  catch (e) { out.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  try { out.classList.add("live"); const r = await callAI(`${MODES[mode]} Use Markdown.\n\n${fmt(sample(10000))}`, [], t => out.innerHTML = md(t)); out.classList.remove("live"); out.innerHTML = md(r); out.dataset.raw = r; $("#sumActs").hidden = false; }
+  catch (e) { out.classList.remove("live"); out.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
   $("#sumBtn").disabled = false;
 };
 $("#sumCopy").onclick = () => { navigator.clipboard?.writeText($("#sumOut").dataset.raw || ""); const s = $("#sumCopy span"); s.textContent = "Copied"; setTimeout(() => s.textContent = "Copy", 1600); };
