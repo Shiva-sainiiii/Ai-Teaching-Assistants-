@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-super-120b-a12b:free",
+        model: process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free",
         stream: !!stream,
         messages: [{ role: "system", content: SYSTEM }, ...past, { role: "user", content: prompt }]
       })
